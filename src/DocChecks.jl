@@ -7,6 +7,7 @@ module DocChecks
 import ..Documenter:
     Documents,
     Utilities,
+    Utilities.Markdown2,
     IdDict
 
 using Compat, DocStringExtensions
@@ -93,7 +94,7 @@ function footnotes(doc::Documents.Document)
     # For all ids the final result should be `(N, 1)` where `N > 1`, i.e. one or more
     # footnote references and a single footnote body.
     footnotes = Dict{Documents.Page, Dict{String, Tuple{Int, Int}}}()
-    for (src, page) in doc.internal.pages
+    for (src, page) in doc.blueprint.pages
         empty!(page.globals.meta)
         orphans = Dict{String, Tuple{Int, Int}}()
         for element in page.elements
@@ -148,7 +149,7 @@ function linkcheck(doc::Documents.Document)
     if doc.user.linkcheck
         if hascurl()
             println(" > checking external URLs:")
-            for (src, page) in doc.internal.pages
+            for (src, page) in doc.blueprint.pages
                 println("   - ", src)
                 for element in page.elements
                     Documents.walk(page.globals.meta, page.mapping[element]) do block
